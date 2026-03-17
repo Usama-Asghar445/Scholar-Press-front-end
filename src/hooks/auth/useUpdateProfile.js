@@ -204,9 +204,14 @@ export const useUpdateProfile = (user, onSuccess) => {
 
       const submitData = new FormData();
 
-      // Append all form fields except email and specializations
+      // Append all form fields except email, specializations, and fieldOfStudy
       Object.keys(formData).forEach((key) => {
-        if (key !== "email" && key !== "specializations" && formData[key]) {
+        if (
+          key !== "email" &&
+          key !== "specializations" &&
+          key !== "fieldOfStudy" &&
+          formData[key]
+        ) {
           submitData.append(key, formData[key]);
         }
       });

@@ -269,48 +269,23 @@ const EditProfileForm = ({ user, onSuccess, onCancel }) => {
                 )}
               </div>
 
-              {/* Field of Study - DROPDOWN */}
+              {/* Field of Study - READ ONLY */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Field of Study <span className="text-red-500">*</span>
+                  Field of Study
+                  <span className="ml-2 text-xs text-gray-500">
+                    (Cannot be changed)
+                  </span>
                 </label>
                 <div className="relative">
                   <FaGraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <select
-                    name="fieldOfStudy"
+                  <input
+                    type="text"
                     value={formData.fieldOfStudy}
-                    onChange={handleChange}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white ${
-                      errors.fieldOfStudy ? "border-red-500" : "border-gray-300"
-                    }`}
-                  >
-                    {FIELD_OF_STUDY_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
+                    disabled
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
+                  />
                 </div>
-                {errors.fieldOfStudy && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.fieldOfStudy}
-                  </p>
-                )}
               </div>
             </div>
           </div>
