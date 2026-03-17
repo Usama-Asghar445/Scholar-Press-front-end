@@ -28,7 +28,7 @@ export const useVerifyEmail = () => {
 
       showSuccess("Account verified successfully");
 
-      navigate("/author-dashboard");
+      navigate("/author");
     } catch (err) {
       const msg = err.response?.data?.message || "Verification failed";
 

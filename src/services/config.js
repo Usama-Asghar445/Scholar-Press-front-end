@@ -1,12 +1,12 @@
 
 export const API_ENDPOINTS = {
   auth: {
-    login: "/auth/login",
-    register: "/auth/register",
-    forgotPassword: "/auth/forgot-password",
-    verifyEmail: "/auth/verify-email",
-    resendCode: "/auth/resend-code",
-    resetPassword: "/auth/reset-password",
+    login: "/user/login",
+    register: "/user/register",
+    forgotPassword: "/user/forgot-password",
+    verifyEmail: "/user/email-verify",
+    resendCode: "/user/resend-code",
+    resetPassword: "/user/reset-password",
     getUser: "/user/get",
   },
   profile: {
