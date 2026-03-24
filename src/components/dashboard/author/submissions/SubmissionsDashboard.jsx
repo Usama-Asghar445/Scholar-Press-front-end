@@ -5,6 +5,7 @@ import PaperList from './PaperList';
 
 const STATUS_TABS = [
   { id: 'all', label: 'All Papers' },
+  { id: 'Submitted', label: 'Submitted' },
   { id: 'Accepted', label: 'Accepted' },
   { id: 'Rejected', label: 'Rejected' },
   { id: 'Under Review', label: 'Under Review' },
@@ -37,8 +38,8 @@ const SubmissionsDashboard = ({ onAddPaper, onViewDetails }) => {
     fetchPapers();
   }, [activeTab]);
 
-  const filteredPapers = papers.filter(paper => 
-    paper.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPapers = (papers || []).filter(paper => 
+    paper?.paperDetails?.title?.toLowerCase()?.includes(searchTerm?.toLowerCase() || "")
   );
 
   return (

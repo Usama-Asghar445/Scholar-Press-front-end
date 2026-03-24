@@ -11,7 +11,9 @@ const statusConfig = {
 };
 
 const PaperCard = ({ paper, onViewDetails }) => {
-  const { title, submissionDate, status } = paper;
+  const title = paper?.paperDetails?.title || "Untitled Paper";
+  const submissionDate = paper?.createdAt || new Date();
+  const status = paper?.status || "Submitted";
   const config = statusConfig[status] || statusConfig['Submitted'];
 
   return (
