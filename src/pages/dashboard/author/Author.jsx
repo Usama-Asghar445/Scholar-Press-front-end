@@ -28,10 +28,12 @@ const navItems = [
   { id: "dashboard", label: "Dashboard", icon: MdDashboard },
   { id: "profile", label: "Profile", icon: FaUser },
   { id: "submissions", label: "My Submissions", icon: FaFileAlt },
+   { id: "apply-role", label: "Apply for Role", icon: MdRateReview },
   { id: "reviews", label: "Reviews", icon: MdRateReview },
   { id: "messages", label: "Messages", icon: FaEnvelope, badge: 2 },
   { id: "statistics", label: "Statistics", icon: FaChartLine },
   { id: "settings", label: "Settings", icon: FaCog },
+ 
 ];
 
 function Author() {
@@ -219,6 +221,14 @@ function Author() {
             <h2 className="text-xl font-semibold mb-4">Settings</h2>
             <p className="text-gray-600">Settings options will appear here...</p>
           </div>
+        );
+
+      case "apply-role":
+        return (
+          <RoleApplication 
+            user={user} 
+            onRoleApplied={refetchUser} 
+          />
         );
 
       default:
