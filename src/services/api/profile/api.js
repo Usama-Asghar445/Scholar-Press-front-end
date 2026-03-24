@@ -36,7 +36,7 @@ export const applyForRole = async (formData) => {
   const token = localStorage.getItem("authToken");
 
   const response = await axios.patch(
-    `${BASE_URL}${API_ENDPOINTS.profile.applyForRole}`,
+    `${BASE_URL}${API_ENDPOINTS.role.applyForRole}`,
     formData,
     {
       headers: {

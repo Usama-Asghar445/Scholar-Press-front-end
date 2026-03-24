@@ -1,4 +1,3 @@
-
 export const API_ENDPOINTS = {
   auth: {
     login: "/user/login",
@@ -12,7 +11,10 @@ export const API_ENDPOINTS = {
   profile: {
     completeProfile: "/user/complete-profile",
     updateProfile: "/user/update-profile",
-    applyForRole: "/user/applied-for-role",
+    applyForRole: "/role/applied-for-role",
+  },
+  role: {
+    applyForRole: "/role/applied-for-role",
   },
 };
 

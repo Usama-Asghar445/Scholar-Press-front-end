@@ -24,11 +24,12 @@ const navItems = [
   { id: "dashboard", label: "Dashboard", icon: MdDashboard },
   { id: "profile", label: "Profile", icon: FaUser },
   { id: "submissions", label: "My Submissions", icon: FaFileAlt },
+   { id: "apply-role", label: "Apply for Role", icon: MdRateReview },
   { id: "reviews", label: "Reviews", icon: MdRateReview },
   { id: "messages", label: "Messages", icon: FaEnvelope, badge: 2 },
   { id: "statistics", label: "Statistics", icon: FaChartLine },
   { id: "settings", label: "Settings", icon: FaCog },
-  { id: "apply-role", label: "Apply for Role", icon: MdRateReview },
+ 
 ];
 
 function Author() {
