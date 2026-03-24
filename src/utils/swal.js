@@ -68,3 +68,22 @@ export const showInfo = (message) => {
     title: message,
   });
 };
+
+// Confirm Dialog
+export const showConfirm = async (title, text) => {
+  return await Swal.fire({
+    title: title,
+    text: text,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#2563eb', // blue-600
+    cancelButtonColor: '#94a3b8', // slate-400
+    confirmButtonText: 'Yes, proceed',
+    cancelButtonText: 'Cancel',
+    customClass: {
+      popup: 'rounded-2xl',
+      confirmButton: 'rounded-xl px-6 py-2 font-bold',
+      cancelButton: 'rounded-xl px-6 py-2 font-bold'
+    }
+  });
+};
