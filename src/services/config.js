@@ -13,6 +13,12 @@ export const API_ENDPOINTS = {
     completeProfile: "/user/complete-profile",
     updateProfile: "/user/update-profile",
   },
+  paper: {
+    submit: "/paper/submit",
+    getMyPapers: "/paper/my-papers",
+    getPaperStatusCounts: "/paper/status-counts",
+    getPaperDetails: (id) => `/paper/details/${id}`,
+  },
 };
 
 export const BASE_URL = "http://localhost:5000/api/v1";
