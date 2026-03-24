@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
   profile: {
     completeProfile: "/user/complete-profile",
     updateProfile: "/user/update-profile",
+    applyForRole: "/user/applied-for-role",
   },
 };
 

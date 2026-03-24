@@ -17,6 +17,7 @@ import TopBar from "../../../components/layout/TopBar";
 import { useGetUser } from "../../../hooks/auth/useGetUser";
 import CompleteProfileNotice from "../../../components/layout/CompleteProfileNotice";
 import ProfileSection from "../../../components/profile/ProfileSection";
+import RoleApplication from "../../../components/dashboard/author/RoleApplication";
 
 // NAV ITEMS
 const navItems = [
@@ -27,6 +28,7 @@ const navItems = [
   { id: "messages", label: "Messages", icon: FaEnvelope, badge: 2 },
   { id: "statistics", label: "Statistics", icon: FaChartLine },
   { id: "settings", label: "Settings", icon: FaCog },
+  { id: "apply-role", label: "Apply for Role", icon: MdRateReview },
 ];
 
 function Author() {
@@ -132,6 +134,14 @@ function Author() {
             <h2 className="text-xl font-semibold mb-4">Settings</h2>
             <p className="text-gray-600">Settings options will appear here...</p>
           </div>
+        );
+
+      case "apply-role":
+        return (
+          <RoleApplication 
+            user={user} 
+            onRoleApplied={refetchUser} 
+          />
         );
 
       default:
