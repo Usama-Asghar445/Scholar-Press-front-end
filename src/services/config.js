@@ -28,6 +28,9 @@ export const API_ENDPOINTS = {
     acceptRoleStatus: "/editor-in-chief/role-management/accept-role-status",
     getUsers: "/editor-in-chief/role-management/users",
     getUserProfile: (id) => `/editor-in-chief/role-management/users/${id}`,
+    getPapers: "/editor-in-chief/paper-management/get-papers",
+    updateStatus: (id) => `/editor-in-chief/paper-management/update-status/${id}`,
+    getPublishedPapers: "/editor-in-chief/paper-management/published-papers",
   },
 };
 
