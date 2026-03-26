@@ -8,7 +8,7 @@ import EmailInstructions from "../pages/auth/EmailInstructions";
 import VerifyEmail from "../pages/auth/VerifyEmail";
 import ResetPassword from "../pages/auth/ResetPassword";
 import Author from "../pages/dashboard/author/Author";
-import Editor from "../pages/dashboard/editor/editor";
+import Editor from "../pages/dashboard/editor/Editor";
 import ChiefEditor from "../pages/dashboard/chief-editor/ChiefEditor";
 import Reviewer from "../pages/dashboard/reviewer/Reviewer";
 import AssociateEditor from "../pages/dashboard/associate-editor/AssociateEditor";
