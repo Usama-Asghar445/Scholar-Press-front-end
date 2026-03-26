@@ -1,11 +1,14 @@
-import { useState } from "react";
 import {
   FaUserTie,
   FaUserCheck,
   FaCog,
   FaHome,
   FaUsers,
-  FaBookOpen
+  FaBookOpen,
+  FaFileAlt,
+  FaBook,
+  FaUserEdit,
+  FaUserClock
 } from "react-icons/fa";
 
 
@@ -18,7 +21,7 @@ import PublishedPapers from "../../../components/dashboard/chief-editor/Publishe
 import PendingApplications from "../../../components/dashboard/chief-editor/role-management/PendingApplications";
 import UserManagement from "../../../components/dashboard/chief-editor/role-management/UserManagement";
 import RoleList from "../../../components/dashboard/chief-editor/role-management/RoleList";
-import { FaUserClock } from "react-icons/fa";
+import { useState } from "react";
 
 // NAV ITEMS
 const navItems = [
@@ -49,13 +52,47 @@ function ChiefEditor() {
         return <PaperManagement />;
       case "published":
         return <PublishedPapers />;
-      case "assignRole":
-      case "reviewers":
-      case "editors":
+      case "pendingApplications":
+        return <PendingApplications />;
+      case "userManagement":
+        return <UserManagement />;
+      case "readers":
+        return (
+          <RoleList 
+            roleType="Reader" 
+            title="Manage Readers" 
+            description="View all registered readers and their submission activities."
+            icon={FaBookOpen}
+          />
+        );
       case "authors":
-      case "journal":
-      case "reports":
-      case "settings":
+        return (
+          <RoleList 
+            roleType="Author" 
+            title="Manage Authors" 
+            description="View and manage all registered authors on the platform."
+            icon={FaUsers}
+          />
+        );
+      case "reviewers":
+        return (
+          <RoleList 
+            roleType="Reviewer" 
+            title="Manage Reviewers" 
+            description="View and manage all peer reviewers."
+            icon={FaUserCheck}
+          />
+        );
+      case "editors":
+        return (
+          <RoleList 
+            roleType="Editor" 
+            title="Manage Editors" 
+            description="View and manage all associate editors."
+            icon={FaUserTie}
+          />
+        );
+      default:
         return (
           <div className="flex flex-col items-center justify-center p-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
              <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300 mb-4 transform rotate-12">
@@ -65,8 +102,6 @@ function ChiefEditor() {
              <p className="text-gray-400 text-xs mt-2 italic font-medium">This section is currently under development.</p>
           </div>
         );
-      default:
-        return <PaperManagement />;
     }
   };
 
@@ -101,59 +136,9 @@ function ChiefEditor() {
         <div className="flex-1 bg-gray-50 overflow-y-auto w-full">
           <main className="p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto min-h-[calc(100vh-80px)]">
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8 min-h-[calc(100vh-140px)]">
-              {activeSection === "pendingApplications" && <PendingApplications />}
-              {activeSection === "userManagement" && <UserManagement />}
-              {activeSection === "readers" && (
-                <RoleList 
-                  roleType="Reader" 
-                  title="Manage Readers" 
-                  description="View all registered readers and their submission activities."
-                  icon={FaBookOpen}
-                />
-              )}
-              {activeSection === "authors" && (
-                <RoleList 
-                  roleType="Author" 
-                  title="Manage Authors" 
-                  description="View and manage all registered authors on the platform."
-                  icon={FaUsers}
-                />
-              )}
-              {activeSection === "reviewers" && (
-                <RoleList 
-                  roleType="Reviewer" 
-                  title="Manage Reviewers" 
-                  description="View and manage all peer reviewers."
-                  icon={FaUserCheck}
-                />
-              )}
-              {activeSection === "editors" && (
-                <RoleList 
-                  roleType="Editor" 
-                  title="Manage Editors" 
-                  description="View and manage all associate editors."
-                  icon={FaUserTie}
-                />
-              )}
-              {activeSection === "dashboard" && (
-                <div className="text-center p-20 text-gray-500">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Chief Editor Dashboard</h2>
-                  <p>Welcome to the Scholar Press Dashboard. Select an option from the sidebar to manage roles and users.</p>
-                </div>
-              )}
-              {/* Fallback for unused tabs */}
-              {["settings", "papers", "assignRole", "journal", "reports"].includes(activeSection) && (
-                <div className="text-center p-20 text-gray-500">
-                  <h2 className="text-xl font-bold text-gray-900 mb-2">{navItems.find(item => item.id === activeSection)?.label}</h2>
-                  <p>This module is currently under development.</p>
-                </div>
-              )}
+              {renderContent()}
             </div>
           </main>
-        <div className="flex-1 bg-gray-50 overflow-y-auto p-4 md:p-8">
-          <div className="max-w-7xl mx-auto">
-             {renderContent()}
-          </div>
         </div>
       </div>
     </div>
