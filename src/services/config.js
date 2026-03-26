@@ -22,6 +22,11 @@ export const API_ENDPOINTS = {
     getPaperStatusCounts: "/paper/status-counts",
     getPaperDetails: (id) => `/paper/details/${id}`,
   },
+  chiefEditor: {
+    getPapers: "/editor-in-chief/paper-management/get-papers",
+    updateStatus: (id) => `/editor-in-chief/paper-management/update-status/${id}`,
+    getPublishedPapers: "/editor-in-chief/paper-management/published-papers",
+  },
 };
 
 export const BASE_URL = "http://localhost:5000/api/v1";
