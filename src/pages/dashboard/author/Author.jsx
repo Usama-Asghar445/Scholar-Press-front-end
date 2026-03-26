@@ -20,6 +20,7 @@ import CompleteProfileNotice from "../../../components/layout/CompleteProfileNot
 import ProfileSection from "../../../components/profile/ProfileSection";
 import SubmissionsDashboard from "../../../components/dashboard/author/submissions/SubmissionsDashboard";
 import AddPaperForm from "../../../components/dashboard/author/submissions/AddPaperForm";
+import RoleApplication from "../../../components/dashboard/author/RoleApplication";
 import { getPaperStatusCounts } from "../../../services/api/author/api";
 import { useEffect } from "react";
 
