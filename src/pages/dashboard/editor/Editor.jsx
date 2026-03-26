@@ -1,26 +1,15 @@
 import { useState } from "react";
-import {
-  FaChartBar,
-  FaFileAlt,
-  FaUserTie,
-  FaHome,
-  FaCog,
-  FaUserCheck
-} from "react-icons/fa";
-import { MdDashboard, MdRateReview } from "react-icons/md";
-
+import { FaHome, FaFileAlt, FaUserCheck, FaUserCircle, FaCog } from "react-icons/fa";
 import Sidebar from "../../../components/layout/Sidebar";
 import TopBar from "../../../components/layout/TopBar";
 import { useGetUser } from "../../../hooks/auth/useGetUser";
 
-// NAV ITEMS
 const navItems = [
- { id: "dashboard", label: "Dashboard", icon: FaHome },
-  { id: "papers", label: "Paper Management", icon: FaFileAlt },
-  { id: "associateEditors", label: "Associate Editors", icon: FaUserTie },
-  { id: "reviewers", label: "Reviewers", icon: FaUserCheck },
-  { id: "reports", label: "Reports", icon: FaChartBar },
-  { id: "settings", label: "Profile Settings", icon: FaCog },
+  { id: "dashboard", label: "Dashboard", icon: FaHome },
+  { id: "managePapers", label: "Manage Papers", icon: FaFileAlt },
+  { id: "assignReviewers", label: "Assign Reviewers", icon: FaUserCheck },
+  { id: "profile", label: "Profile", icon: FaUserCircle },
+  { id: "settings", label: "Settings", icon: FaCog },
 ];
 
 function Editor() {
@@ -57,8 +46,24 @@ function Editor() {
           userLoading={userLoading}
         />
 
-        {/* Empty Content Area (Optional) */}
-        <div className="flex-1 bg-gray-50"></div>
+        {/* Main Content Area */}
+        <div className="flex-1 bg-gray-50 overflow-y-auto w-full">
+          <main className="p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto min-h-[calc(100vh-80px)]">
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8 min-h-[calc(100vh-140px)] flex flex-col items-center justify-center text-center">
+              
+              <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mb-6">
+                 {navItems.find(i => i.id === activeSection)?.icon({ className: "w-10 h-10" })}
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {navItems.find(i => i.id === activeSection)?.label}
+              </h1>
+              <p className="text-gray-500 max-w-lg">
+                Welcome to the Associate Editor Dashboard. This section is currently under construction and will be available in a future update.
+              </p>
+
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );

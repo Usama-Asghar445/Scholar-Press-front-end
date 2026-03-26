@@ -22,6 +22,13 @@ export const API_ENDPOINTS = {
     getPaperStatusCounts: "/paper/status-counts",
     getPaperDetails: (id) => `/paper/details/${id}`,
   },
+  chiefEditor: {
+    // Role Management
+    getPendingApplications: "/editor-in-chief/role-management/get-pending-applications",
+    acceptRoleStatus: "/editor-in-chief/role-management/accept-role-status",
+    getUsers: "/editor-in-chief/role-management/users",
+    getUserProfile: (id) => `/editor-in-chief/role-management/users/${id}`,
+  },
 };
 
 export const BASE_URL = "http://localhost:5000/api/v1";
