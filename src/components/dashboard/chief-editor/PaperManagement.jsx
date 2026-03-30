@@ -11,9 +11,12 @@ import {
   FaCheckCircle,
   FaExclamationCircle
 } from "react-icons/fa";
-import { showSuccess, showError } from "../../../utils/swal";
-import { getChiefEditorPapers, updatePaperStatus } from "../../../services/api/chief-editor/api";
+import { showSuccess, showError, showConfirm } from "../../../utils/swal";
+import { getChiefEditorPapers } from "../../../services/api/chief-editor/api";
+import { deskReject, assignHandlingEditor, finalDecision, publishPaper } from "../../../services/api/workflow/workflow.api";
+import { getUsersByRole } from "../../../services/api/auth/api";
 import PaperDetailsModal from "./PaperDetailsModal";
+import { FaUserTag, FaBan } from "react-icons/fa";
 
 const PaperManagement = () => {
   const [papers, setPapers] = useState([]);
@@ -22,10 +25,25 @@ const PaperManagement = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [selectedPaper, setSelectedPaper] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editors, setEditors] = useState([]);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [paperToAssign, setPaperToAssign] = useState(null);
 
   useEffect(() => {
     fetchPapers();
+    fetchEditors();
   }, []);
+
+  const fetchEditors = async () => {
+    try {
+      const res = await getUsersByRole("Editor");
+      if (res.success) {
+        setEditors(res.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch editors", error);
+    }
+  };
 
   const fetchPapers = async () => {
     setLoading(true);
@@ -41,15 +59,63 @@ const PaperManagement = () => {
     }
   };
 
-  const handleStatusUpdate = async (id, newStatus) => {
-    try {
-      const res = await updatePaperStatus(id, newStatus);
-      if (res.success) {
-        showSuccess(`Paper successfully marked as ${newStatus}`);
-        fetchPapers(); // Refresh the list
+  const handleDeskReject = async (id) => {
+    const { isConfirmed, value: comments } = await showConfirm(
+      "Desk Reject Paper?",
+      "Provide a reason for rejection (this will be sent to the author)",
+      "warning",
+      true // input enabled
+    );
+
+    if (isConfirmed && comments) {
+      try {
+        await deskReject(id, comments);
+        showSuccess("Paper desk rejected successfully");
+        fetchPapers();
+      } catch (error) {
+        showError(error.message || "Failed to reject paper");
       }
+    }
+  };
+
+  const handleAssignEditor = async (paperId, editorId) => {
+    try {
+      await assignHandlingEditor(paperId, editorId);
+      showSuccess("Handling Editor assigned successfully");
+      setIsAssignModalOpen(false);
+      setPaperToAssign(null);
+      fetchPapers();
     } catch (error) {
-      showError(error.message || `Failed to update paper status to ${newStatus}`);
+      showError(error.message || "Failed to assign editor");
+    }
+  };
+
+  const handleFinalDecision = async (id, decision) => {
+    const { isConfirmed, value: comments } = await showConfirm(
+      `${decision} Paper?`,
+      `Are you sure you want to mark this paper as ${decision}?`,
+      "info",
+      true
+    );
+
+    if (isConfirmed) {
+      try {
+        await finalDecision(id, decision, comments || "");
+        showSuccess(`Paper successfully marked as ${decision}`);
+        fetchPapers();
+      } catch (error) {
+        showError(error.message || "Failed to update decision");
+      }
+    }
+  };
+
+  const handlePublish = async (id) => {
+    try {
+      await publishPaper(id);
+      showSuccess("Paper published successfully");
+      fetchPapers();
+    } catch (error) {
+      showError(error.message || "Failed to publish paper");
     }
   };
 
@@ -66,8 +132,13 @@ const PaperManagement = () => {
     switch (status) {
       case "Submitted":
         return `${baseClasses} bg-blue-50 text-blue-600 border-blue-200`;
+      case "Assigned to Editor":
+      case "Assigned to Associate Editor":
+        return `${baseClasses} bg-purple-50 text-purple-600 border-purple-200`;
       case "Under Review":
         return `${baseClasses} bg-yellow-50 text-yellow-600 border-yellow-200`;
+      case "Reviews Completed":
+        return `${baseClasses} bg-orange-50 text-orange-600 border-orange-200`;
       case "Accepted":
         return `${baseClasses} bg-emerald-50 text-emerald-600 border-emerald-200`;
       case "Rejected":
@@ -76,7 +147,8 @@ const PaperManagement = () => {
         return `${baseClasses} bg-indigo-50 text-indigo-600 border-indigo-200`;
       case "Minor Revision":
       case "Major Revision":
-        return `${baseClasses} bg-orange-50 text-orange-600 border-orange-200`;
+      case "Revised Submission":
+        return `${baseClasses} bg-amber-50 text-amber-600 border-amber-200`;
       default:
         return `${baseClasses} bg-gray-50 text-gray-600 border-gray-200`;
     }
@@ -116,15 +188,15 @@ const PaperManagement = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-          {["All", "Submitted", "Under Review", "Accepted", "Rejected", "Published"].map((filter) => (
+        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
+          {["All", "Submitted", "Assigned to Editor", "Under Review", "Reviews Completed", "Accepted", "Rejected", "Published"].map((filter) => (
             <button
               key={filter}
               onClick={() => setStatusFilter(filter)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all whitespace-nowrap ${
                 statusFilter === filter 
                 ? "bg-blue-600 text-white shadow-lg shadow-blue-200" 
-                : "bg-gray-50 text-gray-500 hover:bg-gray-100 border border-gray-100"
+                : "bg-gray-50 text-gray-400 hover:bg-gray-100 border border-gray-100"
               }`}
             >
               {filter}
@@ -199,28 +271,48 @@ const PaperManagement = () => {
                           <FaEye className="w-4 h-4" />
                         </button>
                         
-                        {(paper.status === "Submitted" || paper.status === "Under Review") && (
+                        {/* Initial Actions for Submitted Papers */}
+                        {paper.status === "Submitted" && (
                           <>
                             <button 
-                              onClick={() => handleStatusUpdate(paper._id, "Accepted")}
-                              title="Accept Paper"
-                              className="p-2.5 bg-white text-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 border border-emerald-100 rounded-xl transition-all hover:scale-110 active:scale-95 shadow-sm"
+                              onClick={() => { setPaperToAssign(paper); setIsAssignModalOpen(true); }}
+                              title="Assign Handling Editor"
+                              className="p-2.5 bg-white text-purple-400 hover:text-purple-600 hover:bg-purple-50 border border-purple-100 rounded-xl transition-all hover:scale-110 active:scale-95 shadow-sm flex items-center gap-2"
                             >
-                              <FaCheck className="w-4 h-4" />
+                              <FaUserTag className="w-4 h-4" />
+                              <span className="text-[10px] font-black uppercase tracking-widest hidden xl:inline">Assign Editor</span>
                             </button>
                             <button 
-                              onClick={() => handleStatusUpdate(paper._id, "Rejected")}
-                              title="Reject Paper"
+                              onClick={() => handleDeskReject(paper._id)}
+                              title="Desk Reject"
                               className="p-2.5 bg-white text-rose-400 hover:text-rose-600 hover:bg-rose-50 border border-rose-100 rounded-xl transition-all hover:scale-110 active:scale-95 shadow-sm"
                             >
-                              <FaTimes className="w-4 h-4" />
+                              <FaBan className="w-4 h-4" />
                             </button>
                           </>
                         )}
 
+                        {/* Decision after review is completed */}
+                        {paper.status === "Reviews Completed" && (
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={() => handleFinalDecision(paper._id, "Accepted")}
+                              className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100"
+                            >
+                              Accept
+                            </button>
+                            <button 
+                              onClick={() => handleFinalDecision(paper._id, "Rejected")}
+                              className="px-4 py-2 bg-rose-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-rose-700 transition-all shadow-lg shadow-rose-100"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        )}
+
                         {paper.status === "Accepted" && (
                           <button 
-                            onClick={() => handleStatusUpdate(paper._id, "Published")}
+                            onClick={() => handlePublish(paper._id)}
                             title="Publish Paper"
                             className="p-2.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl transition-all hover:scale-110 active:scale-95 shadow-lg shadow-indigo-200 flex items-center gap-2"
                           >
@@ -230,7 +322,7 @@ const PaperManagement = () => {
                         )}
                         
                         {paper.status === "Published" && (
-                           <div className="p-2.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl flex items-center justify-center gap-2">
+                           <div className="p-2.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl flex items-center justify-center gap-2">
                               <FaCheckCircle className="w-4 h-4" />
                               <span className="text-[10px] font-black uppercase tracking-widest pl-1 pr-1 hidden lg:inline">Live</span>
                            </div>
@@ -244,6 +336,55 @@ const PaperManagement = () => {
           </div>
         )}
       </div>
+
+      {/* Assignment Modal */}
+      {isAssignModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-slide-up">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+              <h3 className="text-lg font-black text-gray-800 uppercase tracking-tight">Assign Handling Editor</h3>
+              <button 
+                onClick={() => setIsAssignModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-gray-500">Select an editor to manage the review process for this paper.</p>
+              <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                {editors.filter(e => e.fieldOfStudy === paperToAssign?.paperDetails?.subject).length === 0 ? (
+                  <div className="text-center py-8 px-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                    <FaExclamationCircle className="mx-auto text-gray-300 text-3xl mb-3" />
+                    <p className="text-gray-500 font-bold text-sm">No specialists found</p>
+                    <p className="text-gray-400 text-xs mt-1">No editors found with expertise in "{paperToAssign?.paperDetails?.subject}"</p>
+                  </div>
+                ) : (
+                  editors
+                    .filter(e => e.fieldOfStudy === paperToAssign?.paperDetails?.subject)
+                    .map((editor) => (
+                      <button
+                        key={editor._id}
+                        onClick={() => handleAssignEditor(paperToAssign._id, editor._id)}
+                        className="p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all text-left flex items-center justify-between group"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                             <p className="font-bold text-gray-800 text-sm">{editor.firstName} {editor.lastName}</p>
+                             <span className="px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded text-[9px] font-black uppercase">Specialist</span>
+                          </div>
+                          <p className="text-xs text-gray-400">{editor.email}</p>
+                          <span className="text-[10px] font-black text-blue-500 uppercase mt-1 block tracking-wider">{editor.fieldOfStudy}</span>
+                        </div>
+                        <FaChevronRight className="text-gray-200 group-hover:text-blue-500 transition-all" />
+                      </button>
+                    ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Details Modal */}
       {isModalOpen && selectedPaper && (

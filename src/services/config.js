@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
     resendCode: "/user/resend-code",
     resetPassword: "/user/reset-password",
     getUser: "/user/get",
+    getUsers: "/user/get-users",
   },
   profile: {
     completeProfile: "/user/complete-profile",

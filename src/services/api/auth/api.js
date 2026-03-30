@@ -89,3 +89,16 @@ export const logoutUser = () => {
   localStorage.removeItem("authToken");
   window.location.href = "/auth/login";
 };
+
+export const getUsersByRole = async (role) => {
+  const token = localStorage.getItem("authToken");
+  const response = await axios.get(
+    `${BASE_URL}${API_ENDPOINTS.auth.getUsers}?role=${role}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response.data;
+};

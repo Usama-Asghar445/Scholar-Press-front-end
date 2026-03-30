@@ -23,6 +23,9 @@ import AddPaperForm from "../../../components/dashboard/author/submissions/AddPa
 import RoleApplication from "../../../components/dashboard/author/RoleApplication";
 import { getPaperStatusCounts } from "../../../services/api/author/api";
 import { useEffect } from "react";
+import PaperDetailsModal from "../../../components/dashboard/chief-editor/PaperDetailsModal";
+import { submitRevision } from "../../../services/api/workflow/workflow.api";
+import { showSuccess, showError, showConfirm } from "../../../utils/swal";
 
 // NAV ITEMS
 const navItems = [
@@ -51,6 +54,8 @@ function Author() {
     minorRevision: 0,
     majorRevision: 0
   });
+  const [selectedPaper, setSelectedPaper] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { user, loading: userLoading, refetchUser } = useGetUser();
 
@@ -178,8 +183,8 @@ function Author() {
           <SubmissionsDashboard 
             onAddPaper={() => setIsAddingPaper(true)}
             onViewDetails={(paper) => {
-              console.log("View details for:", paper);
-              // Future: Navigate to paper details page
+              setSelectedPaper(paper);
+              setIsModalOpen(true);
             }}
           />
         );
@@ -269,6 +274,37 @@ function Author() {
           {renderContent()}
         </div>
       </div>
+
+      {isModalOpen && selectedPaper && (
+        <PaperDetailsModal 
+          paper={selectedPaper}
+          isAuthor={true}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedPaper(null);
+          }}
+          onSubmitRevision={async (paperId) => {
+            const { isConfirmed, value: fileData } = await showConfirm(
+              "Submit Revision",
+              "Please provide the updated manuscript file data (e.g., file URL or description for now)",
+              "info",
+              true // input enabled
+            );
+            
+            if (isConfirmed && fileData) {
+              try {
+                // In a real scenario, this would be a file upload.
+                await submitRevision(paperId, { fileUrl: fileData });
+                showSuccess("Revision submitted successfully");
+                setIsModalOpen(false);
+                fetchStatusCounts();
+              } catch (err) {
+                showError(err.message || "Failed to submit revision");
+              }
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

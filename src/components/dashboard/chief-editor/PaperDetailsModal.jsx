@@ -8,10 +8,13 @@ import {
   FaUser, 
   FaGlobe, 
   FaBuilding, 
-  FaEnvelope 
+  FaEnvelope,
+  FaHistory,
+  FaCheckCircle,
+  FaUpload
 } from "react-icons/fa";
 
-const PaperDetailsModal = ({ paper, onClose }) => {
+const PaperDetailsModal = ({ paper, onClose, isAuthor = false, onSubmitRevision }) => {
   if (!paper) return null;
 
   const { paperDetails, authors, paperFiles, status, createdAt } = paper;
@@ -199,10 +202,57 @@ const PaperDetailsModal = ({ paper, onClose }) => {
               )}
             </div>
           </section>
+
+          {/* Section 5: Workflow History (Timeline) */}
+          <section>
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-1 h-6 bg-indigo-600 rounded-full"></div>
+              <h3 className="text-lg font-bold text-gray-800">Workflow History</h3>
+            </div>
+            
+            <div className="relative pl-8 space-y-8 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
+               {(paper.workflowHistory || []).length === 0 ? (
+                  <p className="text-gray-400 text-sm italic">No history available yet.</p>
+               ) : (
+                  paper.workflowHistory.slice().reverse().map((step, i) => (
+                    <div key={i} className="relative">
+                       <div className={`absolute -left-8 top-1 w-6 h-6 rounded-full border-4 border-white flex items-center justify-center shadow-sm ${
+                          i === 0 ? 'bg-indigo-600 text-white scale-125' : 'bg-gray-200 text-gray-500'
+                       }`}>
+                          <FaCheckCircle className="w-2.5 h-2.5" />
+                       </div>
+                       <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                          <div className="flex justify-between items-start mb-1">
+                             <p className="font-black text-gray-800 text-[10px] uppercase tracking-widest">{step.action}</p>
+                             <span className="text-[10px] text-gray-400 font-bold bg-gray-50 px-2 py-0.5 rounded uppercase">{new Date(step.timestamp).toLocaleString()}</span>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                             {step.comments || `Action performed by ${step.actorId?.role || 'System'}`}
+                          </p>
+                          {step.actorId && (
+                            <p className="text-[10px] text-gray-400 mt-2 font-medium">
+                              Actor: {step.actorId.firstName} {step.actorId.lastName} ({step.actorId.role})
+                            </p>
+                          )}
+                       </div>
+                    </div>
+                  ))
+               )}
+            </div>
+          </section>
         </div>
 
         {/* Footer */}
-        <div className="p-6 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex justify-end">
+        <div className="p-6 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex justify-between items-center">
+          {isAuthor && ["Minor Revision", "Major Revision"].includes(status) && (
+            <button 
+              onClick={() => onSubmitRevision(paper._id)}
+              className="px-6 py-2.5 bg-blue-600 text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 flex items-center gap-2"
+            >
+              <FaUpload className="w-3.5 h-3.5" />
+              Submit Revision
+            </button>
+          )}
           <button 
             onClick={onClose}
             className="px-6 py-2.5 bg-white text-gray-700 font-bold rounded-xl border border-gray-200 hover:bg-gray-50 transition-all shadow-sm"

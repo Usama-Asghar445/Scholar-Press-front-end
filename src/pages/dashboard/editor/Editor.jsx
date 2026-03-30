@@ -3,11 +3,12 @@ import { FaHome, FaFileAlt, FaUserCheck, FaUserCircle, FaCog } from "react-icons
 import Sidebar from "../../../components/layout/Sidebar";
 import TopBar from "../../../components/layout/TopBar";
 import { useGetUser } from "../../../hooks/auth/useGetUser";
+import PaperManagement from "../../../components/dashboard/editor/PaperManagement";
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: FaHome },
   { id: "managePapers", label: "Manage Papers", icon: FaFileAlt },
-  { id: "assignReviewers", label: "Assign Reviewers", icon: FaUserCheck },
+  { id: "assignReviewers", label: "Associate Editors", icon: FaUserCheck },
   { id: "profile", label: "Profile", icon: FaUserCircle },
   { id: "settings", label: "Settings", icon: FaCog },
 ];
@@ -15,9 +16,30 @@ const navItems = [
 function Editor() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeSection, setActiveSection] = useState("managePapers");
 
   const { user, loading: userLoading } = useGetUser();
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case "managePapers":
+        return <PaperManagement />;
+      default:
+        return (
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8 min-h-[calc(100vh-140px)] flex flex-col items-center justify-center text-center">
+            <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mb-6">
+               {navItems.find(i => i.id === activeSection)?.icon({ className: "w-10 h-10" })}
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {navItems.find(i => i.id === activeSection)?.label}
+            </h1>
+            <p className="text-gray-500 max-w-lg">
+              Welcome to the Editor Dashboard. This section is currently under construction.
+            </p>
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -49,19 +71,7 @@ function Editor() {
         {/* Main Content Area */}
         <div className="flex-1 bg-gray-50 overflow-y-auto w-full">
           <main className="p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto min-h-[calc(100vh-80px)]">
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8 min-h-[calc(100vh-140px)] flex flex-col items-center justify-center text-center">
-              
-              <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mb-6">
-                 {navItems.find(i => i.id === activeSection)?.icon({ className: "w-10 h-10" })}
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {navItems.find(i => i.id === activeSection)?.label}
-              </h1>
-              <p className="text-gray-500 max-w-lg">
-                Welcome to the Associate Editor Dashboard. This section is currently under construction and will be available in a future update.
-              </p>
-
-            </div>
+            {renderContent()}
           </main>
         </div>
       </div>

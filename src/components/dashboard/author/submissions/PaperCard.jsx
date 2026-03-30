@@ -8,6 +8,11 @@ const statusConfig = {
   'Minor Revision': { color: 'text-yellow-600', bg: 'bg-yellow-50', dot: 'bg-yellow-500' },
   'Major Revision': { color: 'text-orange-600', bg: 'bg-orange-50', dot: 'bg-orange-500' },
   'Submitted': { color: 'text-gray-600', bg: 'bg-gray-50', dot: 'bg-gray-500' },
+  'Assigned to Editor': { color: 'text-indigo-600', bg: 'bg-indigo-50', dot: 'bg-indigo-500' },
+  'Assigned to Associate Editor': { color: 'text-purple-600', bg: 'bg-purple-50', dot: 'bg-purple-500' },
+  'Reviews Completed': { color: 'text-emerald-600', bg: 'bg-emerald-50', dot: 'bg-emerald-500' },
+  'Revised Submission': { color: 'text-amber-600', bg: 'bg-amber-50', dot: 'bg-amber-500' },
+  'Published': { color: 'text-indigo-700', bg: 'bg-indigo-100', dot: 'bg-indigo-600' },
 };
 
 const PaperCard = ({ paper, onViewDetails }) => {

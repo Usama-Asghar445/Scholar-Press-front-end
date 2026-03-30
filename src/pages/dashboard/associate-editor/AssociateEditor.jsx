@@ -14,34 +14,46 @@ import { MdDashboard, MdRateReview } from "react-icons/md";
 import Sidebar from "../../../components/layout/Sidebar";
 import TopBar from "../../../components/layout/TopBar";
 import { useGetUser } from "../../../hooks/auth/useGetUser";
+import PaperManagement from "../../../components/dashboard/associate-editor/PaperManagement";
 
 // NAV ITEMS
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: FaHome },
-
   { id: "assignedPapers", label: "Assigned Papers", icon: FaFileAlt },
-
   { id: "reviewManagement", label: "Review Management", icon: MdRateReview },
-
   { id: "reviewers", label: "Manage Reviewers", icon: FaUsers },
-
   { id: "recommendations", label: "My Recommendations", icon: FaCheckCircle },
-
   { id: "decisions", label: "Decision History", icon: FaGavel },
-
-  { id: "messages", label: "Messages", icon: FaEnvelope },
-
-  { id: "statistics", label: "Performance Stats", icon: FaChartBar },
-
   { id: "settings", label: "Profile Settings", icon: FaCog },
 ];
 
 function AssociateEditor() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeSection, setActiveSection] = useState("assignedPapers");
 
   const { user, loading: userLoading } = useGetUser();
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case "assignedPapers":
+        return <PaperManagement />;
+      default:
+        return (
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8 min-h-[calc(100vh-140px)] flex flex-col items-center justify-center text-center">
+            <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6">
+               {navItems.find(i => i.id === activeSection)?.icon({ className: "w-10 h-10" })}
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {navItems.find(i => i.id === activeSection)?.label}
+            </h1>
+            <p className="text-gray-500 max-w-lg">
+              Welcome to the Associate Editor Dashboard. This section is currently under construction.
+            </p>
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -70,8 +82,12 @@ function AssociateEditor() {
           userLoading={userLoading}
         />
 
-        {/* Empty Content Area (Optional) */}
-        <div className="flex-1 bg-gray-50"></div>
+        {/* Main Content Area */}
+        <div className="flex-1 bg-gray-50 overflow-y-auto w-full">
+           <main className="p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto min-h-[calc(100vh-80px)]">
+             {renderContent()}
+           </main>
+        </div>
       </div>
     </div>
   );
