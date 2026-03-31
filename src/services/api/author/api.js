@@ -21,7 +21,7 @@ export const submitPaper = async (formData) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
 
   return response.data;
@@ -34,7 +34,7 @@ export const submitPaper = async (formData) => {
  */
 export const getMyPapers = async (status = "") => {
   const token = localStorage.getItem("authToken");
-  const url = status 
+  const url = status
     ? `${BASE_URL}${API_ENDPOINTS.paper.getMyPapers}?status=${status}`
     : `${BASE_URL}${API_ENDPOINTS.paper.getMyPapers}`;
 
@@ -60,7 +60,7 @@ export const getPaperStatusCounts = async () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
 
   return response.data;
@@ -80,8 +80,23 @@ export const getPaperDetails = async (id) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
 
+  return response.data;
+};
+
+export const resubmitPaper = async (id, formData) => {
+  const token = localStorage.getItem("authToken");
+  const response = await axios.patch(
+    `${BASE_URL}${API_ENDPOINTS.paper.resubmit(id)}`,
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
   return response.data;
 };
