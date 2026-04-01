@@ -2,7 +2,7 @@
 // 📁 pages/Author/Author.jsx
 // ============================================
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FaUser,
   FaFileAlt,
@@ -21,20 +21,19 @@ import ProfileSection from "../../../components/profile/ProfileSection";
 import SubmissionsDashboard from "../../../components/dashboard/author/submissions/SubmissionsDashboard";
 import AddPaperForm from "../../../components/dashboard/author/submissions/AddPaperForm";
 import RoleApplication from "../../../components/dashboard/author/RoleApplication";
+import AuthorPaperDetailsModal from "../../../components/dashboard/author/submissions/AuthorPaperDetailsModal";
 import { getPaperStatusCounts } from "../../../services/api/author/api";
-import { useEffect } from "react";
 
 // NAV ITEMS
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: MdDashboard },
   { id: "profile", label: "Profile", icon: FaUser },
   { id: "submissions", label: "My Submissions", icon: FaFileAlt },
-   { id: "apply-role", label: "Apply for Role", icon: MdRateReview },
+  { id: "apply-role", label: "Apply for Role", icon: MdRateReview },
   { id: "reviews", label: "Reviews", icon: MdRateReview },
   { id: "messages", label: "Messages", icon: FaEnvelope, badge: 2 },
   { id: "statistics", label: "Statistics", icon: FaChartLine },
   { id: "settings", label: "Settings", icon: FaCog },
- 
 ];
 
 function Author() {
@@ -42,6 +41,8 @@ function Author() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
   const [isAddingPaper, setIsAddingPaper] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [selectedPaper, setSelectedPaper] = useState(null);
   const [statusCounts, setStatusCounts] = useState({
     total: 0,
     submitted: 0,
@@ -49,7 +50,7 @@ function Author() {
     underReview: 0,
     rejected: 0,
     minorRevision: 0,
-    majorRevision: 0
+    majorRevision: 0,
   });
 
   const { user, loading: userLoading, refetchUser } = useGetUser();
@@ -95,38 +96,52 @@ function Author() {
           <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
             <div className="mb-8">
               <h2 className="text-3xl font-black text-gray-800 tracking-tight">
-                Welcome back, <span className="text-blue-600">{user?.firstName || "Author"}</span>!
+                Welcome back,{" "}
+                <span className="text-blue-600">
+                  {user?.firstName || "Author"}
+                </span>
+                !
               </h2>
-              <p className="text-gray-500 mt-1 font-medium italic">Overview of your research and submission activity</p>
+              <p className="text-gray-500 mt-1 font-medium italic">
+                Overview of your research and submission activity
+              </p>
             </div>
-            
+
             {/* Dashboard Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div 
+              <div
                 className="bg-gradient-to-br from-blue-50 to-white rounded-2xl p-6 border border-blue-100 cursor-pointer hover:shadow-xl hover:shadow-blue-50 transition-all border-l-4 border-l-blue-500 group"
                 onClick={() => setActiveSection("submissions")}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-blue-900 group-hover:text-blue-600 transition-colors">Total Submissions</h3>
+                  <h3 className="font-bold text-blue-900 group-hover:text-blue-600 transition-colors">
+                    Total Submissions
+                  </h3>
                   <div className="p-2 bg-blue-100/50 rounded-lg text-blue-600">
                     <FaFileAlt />
                   </div>
                 </div>
-                <p className="text-4xl font-black text-blue-600">{statusCounts?.total || 0}</p>
+                <p className="text-4xl font-black text-blue-600">
+                  {statusCounts?.total || 0}
+                </p>
                 <div className="flex items-center gap-1 text-[10px] text-blue-400 mt-4 font-bold uppercase tracking-wider">
                   View All Papers <FaChartLine className="ml-1" />
                 </div>
               </div>
-              
+
               <div className="bg-gradient-to-br from-green-50 to-white rounded-2xl p-6 border border-green-100 border-l-4 border-l-green-500">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-bold text-green-900">Accepted Papers</h3>
                   <div className="p-2 bg-green-100/50 rounded-lg text-green-600">
-                  <FaCheck />
+                    <FaCheck />
                   </div>
                 </div>
-                <p className="text-4xl font-black text-green-600">{statusCounts?.accepted || 0}</p>
-                <p className="text-[10px] text-green-500 mt-4 font-bold uppercase tracking-wider">Congratulations!</p>
+                <p className="text-4xl font-black text-green-600">
+                  {statusCounts?.accepted || 0}
+                </p>
+                <p className="text-[10px] text-green-500 mt-4 font-bold uppercase tracking-wider">
+                  Congratulations!
+                </p>
               </div>
 
               <div className="bg-gradient-to-br from-yellow-50 to-white rounded-2xl p-6 border border-yellow-100 border-l-4 border-l-yellow-500">
@@ -136,26 +151,34 @@ function Author() {
                     <FaChartLine />
                   </div>
                 </div>
-                <p className="text-4xl font-black text-yellow-600">{statusCounts?.underReview || 0}</p>
-                <p className="text-[10px] text-yellow-500 mt-4 font-bold uppercase tracking-wider italic">Decisions Pending</p>
+                <p className="text-4xl font-black text-yellow-600">
+                  {statusCounts?.underReview || 0}
+                </p>
+                <p className="text-[10px] text-yellow-500 mt-4 font-bold uppercase tracking-wider italic">
+                  Decisions Pending
+                </p>
               </div>
             </div>
 
             {/* Quick Actions */}
             <div className="mt-12 p-6 bg-gray-50 rounded-2xl border border-dashed border-gray-200 flex flex-col md:flex-row items-center justify-between gap-6">
-               <div>
-                  <h3 className="font-bold text-gray-800 text-lg">Ready to share your next discovery?</h3>
-                  <p className="text-gray-500 text-sm">Start a new manuscript submission in just a few steps.</p>
-               </div>
-               <button 
+              <div>
+                <h3 className="font-bold text-gray-800 text-lg">
+                  Ready to share your next discovery?
+                </h3>
+                <p className="text-gray-500 text-sm">
+                  Start a new manuscript submission in just a few steps.
+                </p>
+              </div>
+              <button
                 onClick={() => {
                   setActiveSection("submissions");
                   setIsAddingPaper(true);
                 }}
                 className="whitespace-nowrap px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xl shadow-blue-100 transition-all font-black text-sm uppercase tracking-widest transform active:scale-95"
-               >
-                 Submit New Paper
-               </button>
+              >
+                Submit New Paper
+              </button>
             </div>
           </div>
         );
@@ -166,7 +189,7 @@ function Author() {
             onGoToProfile={() => setActiveSection("profile")}
           />
         ) : isAddingPaper ? (
-          <AddPaperForm 
+          <AddPaperForm
             user={user}
             onCancel={() => setIsAddingPaper(false)}
             onSuccess={() => {
@@ -175,11 +198,11 @@ function Author() {
             }}
           />
         ) : (
-          <SubmissionsDashboard 
+          <SubmissionsDashboard
             onAddPaper={() => setIsAddingPaper(true)}
             onViewDetails={(paper) => {
-              console.log("View details for:", paper);
-              // Future: Navigate to paper details page
+              setSelectedPaper(paper);
+              setIsDetailsOpen(true);
             }}
           />
         );
@@ -220,17 +243,14 @@ function Author() {
         return (
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h2 className="text-xl font-semibold mb-4">Settings</h2>
-            <p className="text-gray-600">Settings options will appear here...</p>
+            <p className="text-gray-600">
+              Settings options will appear here...
+            </p>
           </div>
         );
 
       case "apply-role":
-        return (
-          <RoleApplication 
-            user={user} 
-            onRoleApplied={refetchUser} 
-          />
-        );
+        return <RoleApplication user={user} onRoleApplied={refetchUser} />;
 
       default:
         return null;
@@ -268,6 +288,16 @@ function Author() {
         <div className="flex-1 bg-gray-50 p-6 overflow-y-auto">
           {renderContent()}
         </div>
+
+        {isDetailsOpen && selectedPaper && (
+          <AuthorPaperDetailsModal
+            paper={selectedPaper}
+            onClose={() => {
+              setIsDetailsOpen(false);
+              setSelectedPaper(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );

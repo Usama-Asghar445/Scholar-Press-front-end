@@ -12,6 +12,7 @@ import Editor from "../pages/dashboard/editor/Editor";
 import ChiefEditor from "../pages/dashboard/chief-editor/ChiefEditor";
 import Reviewer from "../pages/dashboard/reviewer/Reviewer";
 import AssociateEditor from "../pages/dashboard/associate-editor/AssociateEditor";
+import RoleGuard from "../components/auth/RoleGuard";
 
 function PageRoute() {
   return (
@@ -29,11 +30,46 @@ function PageRoute() {
           element={<EmailInstructions />}
         />
 
-        <Route path="/author" element={<Author />} />
-        <Route path="/editor" element={<Editor />} />
-        <Route path="/chief-editor" element={<ChiefEditor />} />
-        <Route path="/reviewer" element={<Reviewer />} />
-        <Route path="/associate-editor" element={<AssociateEditor />} />
+        <Route
+          path="/author"
+          element={
+            <RoleGuard allowedRoles={["Author"]}>
+              <Author />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/editor"
+          element={
+            <RoleGuard allowedRoles={["Editor", "Associate Editor"]}>
+              <Editor />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/chief-editor"
+          element={
+            <RoleGuard allowedRoles={["Editor in Chief"]}>
+              <ChiefEditor />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/reviewer"
+          element={
+            <RoleGuard allowedRoles={["Reviewer"]}>
+              <Reviewer />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/associate-editor"
+          element={
+            <RoleGuard allowedRoles={["Associate Editor"]}>
+              <AssociateEditor />
+            </RoleGuard>
+          }
+        />
 
         {/* <Route path="/user/forget-password" element={<ForgotPassword />} />
         <Route path="/user/reset-password" element={<ResetPassword />} />
