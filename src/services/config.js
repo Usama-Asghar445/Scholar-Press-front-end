@@ -34,6 +34,10 @@ export const API_ENDPOINTS = {
     updateStatus: (id) =>
       `/editor-in-chief/paper-management/update-status/${id}`,
     getPublishedPapers: "/editor-in-chief/paper-management/published-papers",
+    getAssociateEditors: "/editor-in-chief/paper-management/associate-editors",
+    getReviewers: "/editor-in-chief/paper-management/reviewers",
+    getUserQualifications: (userId) =>
+      `/editor-in-chief/paper-management/user-qualifications/${userId}`,
   },
   user: {
     getRelatedUsers: "/user/related-users",
